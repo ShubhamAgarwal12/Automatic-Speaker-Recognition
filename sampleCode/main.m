@@ -6,7 +6,6 @@
 %   Soo Jin Park (sj.park@ucla.edu)
 %   May-04-2016
 % ------------------------------------
-
 tic
 % --------- Choose gender ----------
 GENDER =  'male';
@@ -43,7 +42,7 @@ trainList = tmp.(GENDER);
 trainData = cell(length(trainList),1);
 fprintf('extracting features...\n');
 for nSpk = 1:length(trainList)
-    
+    nSpk
     currSpkList = trainList{nSpk};
     currSpkData = [];
     for i=1:length(currSpkList)
@@ -61,13 +60,16 @@ for nSpk = 1:length(trainList)
         %-------------------------
         % Extract features
         %-------------------------
-        mfcc = get_MFCC(snd,Fs, ftrParams);
-        
+        %mfcc = get_MFCC(snd,Fs, ftrParams);
+        gt = gen_gammaton(Fs, 64);  % get gammatone filterbank
+        sig = reshape(snd, 1, length(snd));
+        g=fgammaton(sig, gt, Fs, 64);
+        gfcc = gtf2gtfcc(g, 2,23);
         %-------------------------
         % Concatenate features from the same speaker
         %-------------------------
-        currFeatures = mfcc;
-        currSpkData = cat(1, currSpkData, currFeatures);
+        currFeatures = gfcc;
+        currSpkData = cat(1, currSpkData, currFeatures(1,1:20));
     end
     
     trainData{nSpk,1} = currSpkData;
@@ -102,11 +104,16 @@ for i = 1:NumTestData
         [snd,Fs] = audioread(currFile);
     end
     
+        gt = gen_gammaton(Fs, 64);  % get gammatone filterbank
+        sig = reshape(snd, 1, length(snd));
+        g=fgammaton(sig, gt, Fs, 64);
+        gfcc = gtf2gtfcc(g, 2,23);
+    
     %-------------------------
     % Extract features
     %-------------------------
-    mfcc = get_MFCC(snd,Fs, ftrParams);
-    currFeatures = mfcc;
+    %mfcc = get_MFCC(snd,Fs, ftrParams);
+    currFeatures = gfcc;
     
     testData{i,1} = currFeatures;
 end
