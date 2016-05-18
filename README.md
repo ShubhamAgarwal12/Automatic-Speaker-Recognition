@@ -9,5 +9,3 @@ The repo contains the following algorithms (tested) till now:
 2. PNCC (main_PNCC.m)
 
 3. GFCC (main_GFCC.m)
-
-4. GF (main_GF.m)
