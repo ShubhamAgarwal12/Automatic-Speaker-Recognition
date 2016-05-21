@@ -6,15 +6,14 @@
 %   Soo Jin Park (sj.park@ucla.edu)
 %   May-04-2016
 % ------------------------------------
-
 tic
 % --------- Choose gender ----------
- %GENDER =  'male';
+%GENDER =  'male';
  GENDER =  'female';
 
 % --------- Choose SNR -------------
- NOISE_SNR  = 'clean';
- %NOISE_SNR  = '10dB';
+ %NOISE_SNR  = 'clean';
+ NOISE_SNR  = '10dB';
 %NOISE_SNR  = '05dB';
 
 %%
@@ -43,7 +42,7 @@ trainList = tmp.(GENDER);
 trainData = cell(length(trainList),1);
 fprintf('extracting features...\n');
 for nSpk = 1:length(trainList)
-    
+    nSpk
     currSpkList = trainList{nSpk};
     currSpkData = [];
     for i=1:length(currSpkList)
@@ -60,28 +59,18 @@ for nSpk = 1:length(trainList)
             [snd,Fs] = audioread(currFile);
         end
         
-        
         %-------------------------
         % Extract features
         %-------------------------
-        % GFCC FEATURES
-        gt = gen_gammaton(Fs, 32);  % get gammatone filterbank
-        sig = reshape(snd, 1, length(snd));
-        g=fgammaton(sig, gt, Fs, 32);
-        gfcc = gtf2gtfcc(g(:, :), 2, 23)';
-        display(size(gfcc));
-        currFeatures = gfcc;
-        
-        % MFCC FEATURES (for comparison)
-        %mfcc = get_MFCC(snd,Fs, ftrParams);
-        %currFeatures = mfcc;
-        
+       [cep2, spec2] = rastaplp(snd, Fs,0,12);
+       del = deltas(cep2);
+       ddel = deltas(deltas(cep2,5),5);
+       cepDpDD = [cep2;del;ddel];
        
         %-------------------------
         % Concatenate features from the same speaker
         %-------------------------
-        
-        
+        currFeatures = cepDpDD';
         currSpkData = cat(1, currSpkData, currFeatures);
     end
     
@@ -112,28 +101,23 @@ for i = 1:NumTestData
     %-------------------------
     currFile = testList{i};
     currFile = strrep(currFile,'\','/');
+        display(currFile)
     if MatLabVersion < 8.0
         [snd,Fs] = wavread(currFile);
     else
         [snd,Fs] = audioread(currFile);
     end
     
-    
-    
+     
     %-------------------------
     % Extract features
     %-------------------------
-    % GFCC FEATURES
-    gt = gen_gammaton(Fs, 32);  % get gammatone filterbank
-    sig = reshape(snd, 1, length(snd));
-    g=fgammaton(sig, gt, Fs, 32);
-    gfcc = gtf2gtfcc(g(:, :), 2, 23)';
-    display(size(gfcc));
-    currFeatures = gfcc;
-    
-    % MFCC FEATURES (for comparison)
+    [cep2, spec2] = rastaplp(snd, Fs,0,12);
+    del = deltas(cep2);
+    ddel = deltas(deltas(cep2,5),5);
+    cepDpDD = [cep2;del;ddel];
     %mfcc = get_MFCC(snd,Fs, ftrParams);
-    %currFeatures = mfcc;
+    currFeatures = cepDpDD';
     
     testData{i,1} = currFeatures;
 end

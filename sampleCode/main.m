@@ -8,11 +8,11 @@
 % ------------------------------------
 tic
 % --------- Choose gender ----------
-GENDER =  'male';
-% GENDER =  'female';
+%GENDER =  'male';
+ GENDER =  'female';
 
 % --------- Choose SNR -------------
-% NOISE_SNR  = 'clean';
+ %NOISE_SNR  = 'clean';
 % NOISE_SNR  = '10dB';
 NOISE_SNR  = '05dB';
 
@@ -50,7 +50,9 @@ for nSpk = 1:length(trainList)
         %-------------------------
         % Read a sound file
         %-------------------------
-        currFile = currSpkList{i};        
+        currFile = currSpkList{i};
+        currFile = strrep(currFile,'\','/');
+        display(currFile)
         if MatLabVersion < 8.0
             [snd,Fs] = wavread(currFile);
         else
@@ -60,16 +62,13 @@ for nSpk = 1:length(trainList)
         %-------------------------
         % Extract features
         %-------------------------
-        %mfcc = get_MFCC(snd,Fs, ftrParams);
-        gt = gen_gammaton(Fs, 64);  % get gammatone filterbank
-        sig = reshape(snd, 1, length(snd));
-        g=fgammaton(sig, gt, Fs, 64);
-        gfcc = gtf2gtfcc(g, 2,23);
+        mfcc = get_MFCC(snd,Fs, ftrParams);
+       
         %-------------------------
         % Concatenate features from the same speaker
         %-------------------------
-        currFeatures = gfcc;
-        currSpkData = cat(1, currSpkData, currFeatures(1,1:20));
+        currFeatures = mfcc;
+        currSpkData = cat(1, currSpkData, currFeatures);
     end
     
     trainData{nSpk,1} = currSpkData;
@@ -98,22 +97,20 @@ for i = 1:NumTestData
     % Read a sound file
     %-------------------------
     currFile = testList{i};
+    currFile = strrep(currFile,'\','/');
+        display(currFile)
     if MatLabVersion < 8.0
         [snd,Fs] = wavread(currFile);
     else
         [snd,Fs] = audioread(currFile);
     end
     
-        gt = gen_gammaton(Fs, 64);  % get gammatone filterbank
-        sig = reshape(snd, 1, length(snd));
-        g=fgammaton(sig, gt, Fs, 64);
-        gfcc = gtf2gtfcc(g, 2,23);
-    
+     
     %-------------------------
     % Extract features
     %-------------------------
-    %mfcc = get_MFCC(snd,Fs, ftrParams);
-    currFeatures = gfcc;
+    mfcc = get_MFCC(snd,Fs, ftrParams);
+    currFeatures = mfcc;
     
     testData{i,1} = currFeatures;
 end
