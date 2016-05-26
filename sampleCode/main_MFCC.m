@@ -55,8 +55,10 @@ for nSpk = 1:length(trainList)
         display(currFile)
         if MatLabVersion < 8.0
             [snd,Fs] = wavread(currFile);
+            snd=WienerScalart96(snd,Fs);
         else
             [snd,Fs] = audioread(currFile);
+            snd=WienerScalart96(snd,Fs);
         end
         
         %-------------------------
@@ -101,8 +103,10 @@ for i = 1:NumTestData
         display(currFile)
     if MatLabVersion < 8.0
         [snd,Fs] = wavread(currFile);
+        snd=WienerScalart96(snd,Fs);
     else
         [snd,Fs] = audioread(currFile);
+        snd=WienerScalart96(snd,Fs);
     end
     
      

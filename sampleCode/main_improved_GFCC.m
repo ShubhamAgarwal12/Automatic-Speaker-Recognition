@@ -14,8 +14,8 @@ tic
 
 % --------- Choose SNR -------------
  %NOISE_SNR  = 'clean';
- NOISE_SNR  = '10dB';
-%NOISE_SNR  = '05dB';
+ %NOISE_SNR  = '10dB';
+NOISE_SNR  = '05dB';
 
 %%
 
