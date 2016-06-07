@@ -22,8 +22,9 @@ for idxClass = 1:NumClass
 %     warning('on','all');
     
     % ----- train -----
+    options = statset('MaxIter',200);
     gmmModel{idxClass} = gmdistribution.fit(currClassData, NumMixtures,...
-        'CovType','diagonal','Start',clusterIdx,'Regularize',RegFactor);
+        'CovType','diagonal','Start',clusterIdx,'Regularize',RegFactor,'Options',options);
     
     
 end
